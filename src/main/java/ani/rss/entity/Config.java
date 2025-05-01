@@ -179,6 +179,11 @@ public class Config implements Serializable {
     private Boolean quarterMerge;
 
     /**
+     * 按照年份存放
+     */
+    private Boolean yearStorage;
+
+    /**
      * 自动禁用已完结番剧的订阅
      */
     private Boolean autoDisabled;
@@ -642,4 +647,9 @@ public class Config implements Serializable {
      * Alist 刷新延迟
      */
     private Long alistRefreshDelayed;
+
+    /**
+     * 自动更新总集数信息
+     */
+    private Boolean updateTotalEpisodeNumber;
 }

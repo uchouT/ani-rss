@@ -46,6 +46,7 @@ public class ConfigUtil {
                 .setAcronym(false)
                 .setQuarter(false)
                 .setQuarterMerge(false)
+                .setYearStorage(false)
                 .setAutoDisabled(false)
                 .setDownloadPath(FilePathUtil.getAbsolutePath(new File("/Media/番剧")))
                 .setOvaDownloadPath(FilePathUtil.getAbsolutePath(new File("/Media/剧场版")))
@@ -164,7 +165,8 @@ public class ConfigUtil {
                 .setGithub("None")
                 .setGithubToken("")
                 .setAlistRefresh(false)
-                .setAlistRefreshDelayed(0L);
+                .setAlistRefreshDelayed(0L)
+                .setUpdateTotalEpisodeNumber(false);
     }
 
     /**
