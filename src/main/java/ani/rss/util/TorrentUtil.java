@@ -713,7 +713,10 @@ public class TorrentUtil {
         }
         MessageUtil.send(ConfigUtil.CONFIG, ani, text, MessageEnum.DOWNLOAD_START);
 
+        createTvShowNfo(savePath, ani);
+
         Config config = ConfigUtil.CONFIG;
+
         Integer downloadRetry = config.getDownloadRetry();
         for (int i = 1; i <= downloadRetry; i++) {
             try {
@@ -730,6 +733,52 @@ public class TorrentUtil {
         MessageUtil.send(ConfigUtil.CONFIG, ani,
                 StrFormatter.format("{} 添加失败，疑似为坏种", name),
                 MessageEnum.ERROR);
+    }
+
+    /**
+     * 生成 tvshow.info
+     *
+     * @param savePath
+     * @param ani
+     */
+    public static synchronized void createTvShowNfo(String savePath, Ani ani) {
+        Config config = ConfigUtil.CONFIG;
+
+        Boolean tvShowNfo = config.getTvShowNfo();
+        if (!tvShowNfo) {
+            return;
+        }
+
+        TmdbUtil.Tmdb tmdb = ani.getTmdb();
+
+        if (Objects.isNull(tmdb)) {
+            return;
+        }
+
+        String tmdbId = tmdb.getId();
+
+        if (StrUtil.isBlank(tmdbId)) {
+            return;
+        }
+        String seasonName = config.getSeasonName();
+
+        if (seasonName.equals("None")) {
+            return;
+        }
+
+        File tvshowFile = new File(new File(savePath).getParent() + "/tvshow.nfo");
+
+        if (tvshowFile.exists()) {
+            return;
+        }
+
+        String s = """
+                <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+                <tvshow>
+                    <tmdbid>{}</tmdbid>
+                </tvshow>
+                """;
+        FileUtil.writeUtf8String(StrFormatter.format(s, tmdbId), tvshowFile);
     }
 
     /**

@@ -72,6 +72,8 @@
               <el-text class="mx-1" size="small">
                 自动使用TMDB的标题
               </el-text>
+              <br>
+              <el-checkbox v-model="props.config['tmdbAnime']" label="仅获取动漫"/>
             </div>
           </el-form-item>
           <el-form-item label="TMDB语言">
@@ -79,6 +81,15 @@
               <el-option v-for="language in ['zh-CN','zh-TW','ja-JP','en-US']" :value="language"
                          :key="language"></el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="tvshow.nfo">
+            <div>
+              <el-switch v-model:model-value="props.config['tvShowNfo']"/>
+              <br>
+              <el-text class="mx-1" size="small">
+                自动生成 <strong>tvshow.nfo</strong> 文件, 内包含 <strong>tmdbid</strong> 更方便 <strong>emby</strong> 识别
+              </el-text>
+            </div>
           </el-form-item>
           <el-form-item label="默认开启全局排除">
             <el-switch v-model:model-value="props.config.enabledExclude" :disabled="props.config.importExclude"/>

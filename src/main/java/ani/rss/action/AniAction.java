@@ -17,6 +17,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.StrFormatter;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.http.server.HttpServerRequest;
 import cn.hutool.http.server.HttpServerResponse;
@@ -78,7 +79,6 @@ public class AniAction implements BaseAction {
             DOWNLOAD.set(false);
         });
         resultSuccessMsg("已开始刷新RSS {} {}", downloadAni.getTitle(), downloadAni.getUrl());
-
     }
 
     /**
@@ -238,8 +238,8 @@ public class AniAction implements BaseAction {
             Integer month = ani.getMonth();
             Integer day = ani.getDate();
             DateTime dateTime = DateUtil.parseDate(StrFormatter.format("{}-{}-{}", year, month, day));
-            // 1表示周日，2表示周一
-            ani.setWeek(DateUtil.dayOfWeek(dateTime));
+            // 0表示周日，1表示周一
+            ani.setWeek(DateUtil.dayOfWeek(dateTime) - 1);
         }
         resultSuccess(list);
     }
@@ -311,12 +311,35 @@ public class AniAction implements BaseAction {
         });
     }
 
+    private void batchEnable(boolean enable) {
+        List<String> ids = getBody(JsonArray.class)
+                .asList()
+                .stream()
+                .map(JsonElement::getAsString)
+                .toList();
+        for (Ani ani : AniUtil.ANI_LIST) {
+            String id = ani.getId();
+            if (!ids.contains(id)) {
+                continue;
+            }
+            ani.setEnable(enable);
+        }
+        AniUtil.sync();
+        resultSuccessMsg("修改完成");
+    }
+
     @Override
     public void doAction(HttpServerRequest req, HttpServerResponse res) {
         String method = req.getMethod();
-        String s = req.getParam("download");
-        if (Boolean.parseBoolean(s)) {
+        String type = StrUtil.blankToDefault(req.getParam("type"), "");
+        if (type.equals("download")) {
             download();
+            return;
+        }
+
+        if (type.equals("batchEnable")) {
+            boolean enable = Boolean.parseBoolean(req.getParam("value"));
+            batchEnable(enable);
             return;
         }
 

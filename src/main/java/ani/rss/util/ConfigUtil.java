@@ -8,6 +8,7 @@ import ani.rss.enums.ServerChanTypeEnum;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -29,6 +30,7 @@ public class ConfigUtil {
                 .setMikanHost("https://mikanime.tv")
                 .setTmdbApi("https://api.themoviedb.org")
                 .setTmdbApiKey("")
+                .setTmdbAnime(true)
                 .setRenameSleep(0.5)
                 .setGcSleep(10)
                 .setRename(true)
@@ -166,7 +168,9 @@ public class ConfigUtil {
                 .setGithubToken("")
                 .setAlistRefresh(false)
                 .setAlistRefreshDelayed(0L)
-                .setUpdateTotalEpisodeNumber(false);
+                .setUpdateTotalEpisodeNumber(false)
+                .setAlistDownloadTimeout(60)
+                .setTvShowNfo(false);
     }
 
     /**
@@ -206,6 +210,13 @@ public class ConfigUtil {
         LogUtil.loadLogback();
         log.debug("加载配置文件 {}", configFile);
         TorrentUtil.load();
+        ThreadUtil.execute(() -> {
+            try {
+                AfdianUtil.verify();
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        });
     }
 
     /**
